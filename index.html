@@ -597,6 +597,8 @@
             font-family: 'Fira Code', 'Courier New', monospace;
             box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.4);
             position: relative;
+            direction: ltr !important;
+            text-align: left !important;
         }
 
         .code-block::before {
@@ -614,6 +616,8 @@
         .code-block pre {
             margin-top: 25px;
             white-space: pre-wrap;
+            direction: ltr !important;
+            text-align: left !important;
         }
 
         .code-block h5 {
@@ -927,9 +931,9 @@
 
             <div class="info-box">
                 <h3>🧭 איך להשתמש במדריך הזה</h3>
-                <p><strong>🚀 מתחיל לגמרי?</strong> → תתחיל ב"הכנות ראשוניות" (חלק 0) ותעבור בסדר.</p>
-                <p><strong>⚡ רוצה מהיר?</strong> → השתמש במדריך המהיר של 10 דקות ואחר כך חזור לכאן להעמקה.</p>
-                <p><strong>🔧 יש לך כבר בוט עובד?</strong> → אתה יכול לקפוץ לחלק הרלוונטי (משתמש בתפריט השמאלי).</p>
+                <p><strong>🚀 מתחיל לגמרי?</strong> ← תתחיל ב"הכנות ראשוניות" (חלק 0) ותעבור בסדר.</p>
+<p><strong>⚡ רוצה מהיר?</strong> ← השתמש במדריך המהיר של 10 דקות ואחר כך חזור לכאן להעמקה.</p>
+<p><strong>🔧 יש לך כבר בוט עובד?</strong> ← אתה יכול לקפוץ לחלק הרלוונטי (משתמש בתפריט השמאלי).</p>
             </div>
 
             <!-- Quick Start Button -->
@@ -1044,7 +1048,7 @@ python-dotenv==1.0.0</pre>
                             <div class="quick-step-number">5</div>
                             <h4>צור שירות ב-Render (דקות 7-8)</h4>
                             <ol>
-                                <li>לחץ <strong>"New +"</strong> → <strong>"Web Service"</strong></li>
+                                <li>לחץ <strong>"New +"</strong> ← <strong>"Web Service"</strong></li>
                                 <li>בחר את המאגר שיצרת</li>
                                 <li>מלא:
                                     <ul>
@@ -1111,9 +1115,9 @@ python-dotenv==1.0.0</pre>
                         <div class="warning-box">
                             <h4>🆘 אם משהו לא עובד:</h4>
                             <ul>
-                                <li><strong>הבוט לא עונה?</strong> → בדוק שהטוקן נכון ב-Environment</li>
-                                <li><strong>שגיאות בלוגים?</strong> → בדוק שהקבצים נשמרו נכון ב-GitHub</li>
-                                <li><strong>השירות לא עולה?</strong> → חכה עוד 2-3 דקות, לפעמים זה לוקח זמן</li>
+                                <li><strong>הבוט לא עונה?</strong> ← בדוק שהטוקן נכון ב-Environment</li>
+                                <li><strong>שגיאות בלוגים?</strong> ← בדוק שהקבצים נשמרו נכון ב-GitHub</li>
+                                <li><strong>השירות לא עולה?</strong> ← חכה עוד 2-3 דקות, לפעמים זה לוקח זמן</li>
                             </ul>
                         </div>
 
@@ -1167,8 +1171,7 @@ python-dotenv==1.0.0</pre>
                         <!-- Screenshot placeholder -->
                         <div class="screenshot-placeholder">
                             <div class="screenshot-content">
-                                <h5>📸 צילום מסך: BotFather בטלגרם</h5>
-                                <p>כאן יהיה צילום מסך של ממשק BotFather עם העיטור הכחול</p>
+                                
                                 <div class="placeholder-image">🤖 @BotFather ✅</div>
                             </div>
                         </div>
@@ -1251,7 +1254,7 @@ python-dotenv==1.0.0</pre>
                             <!-- Screenshot placeholder -->
                             <div class="screenshot-placeholder">
                                 <div class="screenshot-content">
-                                    <h5>📸 צילום מסך: הודעת הצלחה מBotFather</h5>
+            
                                     <div class="placeholder-image">
                                         Done! Congratulations on your new bot...<br>
                                         <strong>6123456789:AAFGHJ-abcdefghijklmnopqr</strong>
@@ -1358,8 +1361,7 @@ Keep your token secure and store it safely, it can be used by anyone to control 
                             <!-- Screenshot placeholder -->
                             <div class="screenshot-placeholder">
                                 <div class="screenshot-content">
-                                    <h5>📸 צילום מסך: עמוד הרישום למונגו</h5>
-                                    <p>כאן יהיה צילום מסך של עמוד ההרשמה ב-MongoDB Atlas</p>
+                                    
                                     <div class="placeholder-image">MongoDB Atlas - Sign Up
 🌟 Try free
 📧 Email: your@email.com
@@ -1414,8 +1416,7 @@ Keep your token secure and store it safely, it can be used by anyone to control 
                             <!-- Screenshot placeholder -->
                             <div class="screenshot-placeholder">
                                 <div class="screenshot-content">
-                                    <h5>📸 צילום מסך: בחירת תוכנית חינמית</h5>
-                                    <p>כאן יהיה צילום מסך של בחירת M0 Sandbox החינמי</p>
+                                    
                                     <div class="placeholder-image">Choose Your Plan
 🟢 M0 Sandbox - FREE
 512 MB Storage
@@ -1484,8 +1485,7 @@ Shared RAM
                             <!-- Screenshot placeholder -->
                             <div class="screenshot-placeholder">
                                 <div class="screenshot-content">
-                                    <h5>📸 צילום מסך: יצירת משתמש מסד נתונים</h5>
-                                    <p>כאן יהיה צילום מסך של טופס יצירת משתמש</p>
+                                    
                                     <div class="placeholder-image">Database Access
 👤 Username: botuser
 🔑 Password: ••••••••••
@@ -1499,7 +1499,7 @@ Shared RAM
                                     <div class="step-content">
                                         <strong>יצירת משתמש מסד נתונים:</strong>
                                         <ul>
-                                            <li>בעמוד Security → Database Access</li>
+                                            <li>בעמוד Security ← Database Access</li>
                                             <li>לחץ "Add New Database User"</li>
                                             <li>שם משתמש: <code>botuser</code> (או כל שם)</li>
                                             <li>סיסמה: <strong>צור סיסמה חזקה ושמור אותה!</strong></li>
@@ -1514,7 +1514,7 @@ Shared RAM
                                     <div class="step-content">
                                         <strong>הגדרת IP Whitelist:</strong>
                                         <ul>
-                                            <li>בעמוד Security → Network Access</li>
+                                            <li>בעמוד Security ← Network Access</li>
                                             <li>לחץ "Add IP Address"</li>
                                             <li>בחר <strong>"Allow Access from Anywhere"</strong> (0.0.0.0/0)</li>
                                             <li>זה בטוח כי יש לך סיסמה חזקה</li>
@@ -1531,8 +1531,7 @@ Shared RAM
                             <!-- Screenshot placeholder -->
                             <div class="screenshot-placeholder">
                                 <div class="screenshot-content">
-                                    <h5>📸 צילום מסך: Connect Your Application</h5>
-                                    <p>כאן יהיה צילום מסך של הConnection String</p>
+                                    
                                     <div class="placeholder-image">Connect to Cluster0
 🔗 Connect your application
 🐍 Python 3.6 or later
@@ -1544,7 +1543,7 @@ Shared RAM
                                 <div class="step">
                                     <div class="step-number">1</div>
                                     <div class="step-content">
-                                        <strong>חזור לעמוד הראשי</strong> (Database → Clusters)
+                                        <strong>חזור לעמוד הראשי</strong> (Database ← Clusters)
                                     </div>
                                 </div>
                                 
@@ -2190,7 +2189,7 @@ CMD python main.py</pre>
                             <h4>דרך 1: הגדרה דרך הממשק (מומלץ למתחילים)</h4>
                             <ol>
                                 <li><strong>לך ל-Render Dashboard</strong></li>
-                                <li><strong>לחץ "New +"</strong> → <strong>"Web Service"</strong></li>
+                                <li><strong>לחץ "New +"</strong> ← <strong>"Web Service"</strong></li>
                                 <li><strong>בחר את המאגר שלך מ-GitHub</strong></li>
                                 <li><strong>מלא את השדות:</strong>
                                     <ul>
@@ -2280,7 +2279,7 @@ services:
                             <h4>איך Render קורא את הקובץ:</h4>
                             <ol>
                                 <li>אתה עושה push לקובץ render.yaml ל-GitHub</li>
-                                <li>ב-Render, תלחץ "New +" → "Web Service"</li>
+                                <li>ב-Render, תלחץ "New +" ← "Web Service"</li>
                                 <li>תבחר את המאגר שלך</li>
                                 <li>Render יזהה את הקובץ אוטומטית ויטען את ההגדרות</li>
                                 <li>תוכל לעדכן פרטים נוספים בממשק אם צריך</li>
@@ -2731,7 +2730,7 @@ async def smart_broadcast(update, context):
                                 <ol>
                                     <li>לך ל-<a href="https://platform.openai.com/" target="_blank">platform.openai.com</a></li>
                                     <li>הירשם/התחבר לחשבון</li>
-                                    <li>לחץ על שמך → "View API Keys"</li>
+                                    <li>לחץ על שמך ← "View API Keys"</li>
                                     <li>לחץ "Create new secret key"</li>
                                     <li>תן שם למפתח: "telegram-bot"</li>
                                     <li>העתק את המפתח (מתחיל ב-<code>sk-</code>)</li>
@@ -3430,7 +3429,7 @@ async def smart_sentiment_command(update, context):
                             <div class="solution">
                                 <strong>פתרון:</strong>
                                 <ol>
-                                    <li>בדוק ב-Render → Environment שכל המשתנים קיימים</li>
+                                    <li>בדוק ב-Render ← Environment שכל המשתנים קיימים</li>
                                     <li>ודא שהטוקן נכון (ללא רווחים נוספים)</li>
                                     <li>בדוק שקובץ .env נשמר כ-Secret File</li>
                                 </ol>
