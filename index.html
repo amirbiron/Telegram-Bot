@@ -926,6 +926,7 @@
                 <ul>
                     <li><a href="#error-handling">טיפול בשגיאות מתקדם</a></li>
                     <li><a href="#polling-conflicts">פתרון קונפליקטי Polling</a></li>
+                    <li><a href="#mongodb-locking">נעילה MongoDB למניעת קונפליקטים</a></li>
                     <li><a href="#anthropic-models">מודלי Anthropic API</a></li>
                     <li><a href="#message-editing">עריכת הודעות ללא שגיאות</a></li>
                     <li><a href="#google-search-api">Google Custom Search</a></li>
@@ -4203,7 +4204,217 @@ RUN_MODE=cron python main.py</pre>
                         </div>
                     </div>
 
-                    <!-- 3. מודלי Anthropic API -->
+                    <!-- 3. נעילה MongoDB למניעת קונפליקטים -->
+                    <div class="topic" id="mongodb-locking">
+                        <h3>🔒 נעילה MongoDB למניעת קונפליקטים - פתרון מתקדם</h3>
+                        
+                        <div class="warning-box">
+                            <h4>🚨 הבעיה המתקדמת: קונפליקטים בסביבת ענן</h4>
+                            <p>בסביבות ענן כמו Render, בזמן עדכון הבוט (deploy), לפעמים שני מופעים של הבוט רצים במקביל לכמה שניות. זה גורם לשגיאת <strong>telegram.error.Conflict</strong> ולהתנהגות לא יציבה.</p>
+                            <p><strong>הפתרון הבסיסי עם RUN_MODE</strong> עוזר, אבל לא מושלם. עדיין יכולות להיות התנגשויות בזמן החלפת גרסאות.</p>
+                        </div>
+
+                        <div class="info-box">
+                            <h4>💡 הפתרון המתקדם: נעילה ב-MongoDB</h4>
+                            <p>במקום לסמוך על קבצים מקומיים או משתני סביבה, נשתמש ב-MongoDB עצמו כ<strong>"מקור אמת"</strong> מרכזי:</p>
+                            <ul>
+                                <li><strong>רכישת נעילה:</strong> התהליך הראשון יוצר מסמך "נעילה" ב-MongoDB</li>
+                                <li><strong>בדיקת נעילה:</strong> כל תהליך חדש בודק אם הנעילה כבר תפוסה</li>
+                                <li><strong>יציאה נקייה:</strong> אם הנעילה תפוסה, התהליך יוצא מיד בלי לגעת בטלגרם</li>
+                                <li><strong>שחרור נעילה:</strong> כשהתהליך נסגר, הוא דואג למחוק את הנעילה</li>
+                            </ul>
+                        </div>
+
+                        <div class="subtopic">
+                            <h4>שלב 1: הוספת הייבואים הנדרשים</h4>
+                            <div class="code-block">
+                                <h5>📄 בראש קובץ main.py:</h5>
+                                <pre>import os
+import sys
+import atexit
+from datetime import datetime, timedelta
+from pymongo.errors import DuplicateKeyError
+
+# הייבואים הקיימים שלך
+from telegram.ext import Application, CommandHandler, MessageHandler, filters
+from database import db  # וודא שיש לך חיבור ל-MongoDB</pre>
+                            </div>
+                        </div>
+
+                        <div class="subtopic">
+                            <h4>שלב 2: פונקציות ניהול הנעילה</h4>
+                            <div class="code-block">
+                                <h5>🔒 מערכת הנעילה המלאה:</h5>
+                                <pre>def manage_mongo_lock():
+    """
+    מנהל נעילה ב-MongoDB למניעת הרצות כפולות של הבוט
+    """
+    lock_collection = db.bot_locks
+    lock_id = "telegram_bot_instance"
+    current_time = datetime.now()
+    
+    try:
+        # ניסיון ליצור נעילה חדשה
+        lock_doc = {
+            "_id": lock_id,
+            "created_at": current_time,
+            "process_info": {
+                "host": os.environ.get('RENDER_SERVICE_NAME', 'local'),
+                "started_at": current_time.isoformat()
+            }
+        }
+        
+        lock_collection.insert_one(lock_doc)
+        print("✅ נעילה נרכשה בהצלחה - הבוט יכול להתחיל")
+        
+        # רישום פונקציית הניקוי לרוץ ביציאה
+        atexit.register(cleanup_mongo_lock)
+        
+    except DuplicateKeyError:
+        # הנעילה כבר קיימת - בדיקה אם היא תקפה
+        existing_lock = lock_collection.find_one({"_id": lock_id})
+        
+        if existing_lock:
+            created_at = existing_lock["created_at"]
+            age = current_time - created_at
+            
+            # אם הנעילה ישנה מדי (יותר מ-10 דקות), נמחק אותה
+            if age > timedelta(minutes=10):
+                print("⚠️ נמצאה נעילה ישנה, מוחק אותה...")
+                lock_collection.delete_one({"_id": lock_id})
+                
+                # ניסיון חוזר ליצור נעילה
+                try:
+                    lock_collection.insert_one(lock_doc)
+                    print("✅ נעילה חדשה נרכשה אחרי מחיקת הישנה")
+                    atexit.register(cleanup_mongo_lock)
+                except DuplicateKeyError:
+                    print("❌ מופע אחר של הבוט כבר רץ - יוצא")
+                    sys.exit(0)
+            else:
+                print(f"❌ מופע של הבוט כבר רץ (נעילה בת {age.total_seconds():.0f} שניות)")
+                print("ℹ️ יוצא בצורה נקייה כדי למנוע קונפליקט")
+                sys.exit(0)
+                
+    except Exception as e:
+        print(f"❌ שגיאה בניהול הנעילה: {e}")
+        print("⚠️ ממשיך בסיכון (ייתכנו קונפליקטים)")
+
+def cleanup_mongo_lock():
+    """
+    מנקה את הנעילה כשהתהליך נסגר
+    """
+    try:
+        lock_collection = db.bot_locks
+        result = lock_collection.delete_one({"_id": "telegram_bot_instance"})
+        
+        if result.deleted_count > 0:
+            print("🧹 נעילה שוחררה בהצלחה")
+        else:
+            print("ℹ️ לא נמצאה נעילה לשחרור")
+            
+    except Exception as e:
+        print(f"⚠️ שגיאה בשחרור הנעילה: {e}")</pre>
+                            </div>
+                        </div>
+
+                        <div class="subtopic">
+                            <h4>שלב 3: שילוב במערכת הבוט</h4>
+                            <div class="code-block">
+                                <h5>🔧 עדכון הפונקציה הראשית:</h5>
+                                <pre>def main():
+    """הפונקציה הראשית של הבוט"""
+    
+    # 🔒 בדיקת נעילה - צריכה להיות השורה הראשונה!
+    manage_mongo_lock()
+    
+    print("🚀 מתחיל את הבוט...")
+    
+    # בדיקה שהטוקן קיים
+    bot_token = os.getenv('BOT_TOKEN')
+    if not bot_token:
+        print("❌ שגיאה: BOT_TOKEN לא נמצא!")
+        return
+    
+    # הפעלת שרת Keep-Alive
+    flask_thread = Thread(target=run_flask, daemon=True)
+    flask_thread.start()
+    
+    # בניית הבוט
+    application = Application.builder().token(bot_token).build()
+    
+    # הוספת מטפלי הודעות
+    application.add_handler(CommandHandler("start", start))
+    # ... שאר המטפלים
+    
+    # הפעלת הבוט
+    print("✅ הבוט פועל עם הגנה מפני קונפליקטים")
+    application.run_polling(drop_pending_updates=True)
+
+if __name__ == '__main__':
+    main()</pre>
+                            </div>
+                        </div>
+
+                        <div class="success-box">
+                            <h4>✅ יתרונות הנעילה ב-MongoDB:</h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                <div>
+                                    <h5>🛡️ אבטחה ויציבות:</h5>
+                                    <ul>
+                                        <li>מניעה מוחלטת של קונפליקטים</li>
+                                        <li>אוטו-ניקוי נעילות ישנות</li>
+                                        <li>יציאה נקייה בלי קריסות</li>
+                                        <li>עובד בכל סביבת ענן</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h5>🔍 ניהול ומעקב:</h5>
+                                    <ul>
+                                        <li>לוגים ברורים למה קורה</li>
+                                        <li>מידע על גיל הנעילה</li>
+                                        <li>זיהוי תהליכים תקועים</li>
+                                        <li>ניהול החלפות גרסאות</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="warning-box">
+                            <h4>🔧 פתרון תקלות נפוצות:</h4>
+                            
+                            <div class="error-item">
+                                <h5>הבוט לא עולה - נעילה תקועה</h5>
+                                <p><strong>הסיבה:</strong> נעילה נשארה ממופע קודם שקרס</p>
+                                <div class="solution">
+                                    <strong>פתרון אוטומטי:</strong> הקוד מוחק נעילות ישנות מעל 10 דקות
+                                    <br><strong>פתרון ידני:</strong> מחק ב-MongoDB את הקולקציה <code>bot_locks</code>
+                                </div>
+                            </div>
+                            
+                            <div class="error-item">
+                                <h5>שגיאות חיבור ל-MongoDB</h5>
+                                <p><strong>הסיבה:</strong> בעיית רשת או הרשאות</p>
+                                <div class="solution">
+                                    <strong>התנהגות:</strong> הבוט ימשיך לרוץ אבל יזהיר שאין הגנה מפני קונפליקטים
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tip-box">
+                            <h4>💡 מתי להשתמש בפתרון הזה:</h4>
+                            <ul>
+                                <li><strong>בוטים בייצור</strong> עם משתמשים רבים</li>
+                                <li><strong>עדכונים תכופים</strong> של הקוד</li>
+                                <li><strong>סביבות ענן</strong> עם auto-scaling</li>
+                                <li><strong>צוותי פיתוח</strong> שמעלים קוד במקביל</li>
+                            </ul>
+                            
+                            <p><strong>לבוטים פשוטים:</strong> הפתרון הבסיסי עם RUN_MODE מספיק. השתמש בנעילה רק אם יש בעיות חוזרות.</p>
+                        </div>
+                    </div>
+
+                    <!-- 4. מודלי Anthropic API -->
                     <div class="topic" id="anthropic-models">
                         <h3>🧠 מודלי Anthropic API</h3>
                         
@@ -4356,7 +4567,7 @@ application.add_handler(CommandHandler("claude", claude_command))</pre>
                         </div>
                     </div>
 
-                    <!-- 4. עריכת הודעות ללא שגיאות -->
+                    <!-- 5. עריכת הודעות ללא שגיאות -->
                     <div class="topic" id="message-editing">
                         <h3>✏️ עריכת הודעות ללא שגיאות</h3>
                         
@@ -4562,7 +4773,7 @@ application.add_handler(CallbackQueryHandler(handle_menu_callback))</pre>
                         </div>
                     </div>
 
-                    <!-- 5. Google Custom Search API -->
+                    <!-- 6. Google Custom Search API -->
                     <div class="topic" id="google-search-api">
                         <h3>🔍 Google Custom Search API</h3>
                         
