@@ -599,6 +599,8 @@
             position: relative;
             direction: ltr !important;
             text-align: left !important;
+            word-wrap: break-word;
+            word-break: break-word;
         }
 
         .code-block::before {
@@ -618,6 +620,9 @@
             white-space: pre-wrap;
             direction: ltr !important;
             text-align: left !important;
+            word-wrap: break-word;
+            word-break: break-word;
+            overflow-wrap: break-word;
         }
 
         .code-block h5 {
@@ -768,6 +773,60 @@
 
             .section-content {
                 padding: 20px;
+            }
+
+            /* Better code block handling on mobile */
+            .code-block {
+                padding: 15px;
+                font-size: 0.85em;
+                max-width: 100%;
+                overflow-x: auto;
+            }
+
+            .code-block pre {
+                font-size: 0.85em;
+                line-height: 1.4;
+                /* Allow horizontal scrolling for very long lines */
+                white-space: pre;
+                overflow-x: auto;
+                /* But still break very long words if needed */
+                word-break: break-all;
+            }
+
+            /* Add visual indicator for scrollable content */
+            .code-block::-webkit-scrollbar {
+                height: 8px;
+            }
+
+            .code-block::-webkit-scrollbar-track {
+                background: #2d3748;
+                border-radius: 4px;
+            }
+
+            .code-block::-webkit-scrollbar-thumb {
+                background: #4a5568;
+                border-radius: 4px;
+            }
+
+            /* Handle tables on mobile */
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            /* Handle other potentially wide content */
+            .subtopic, .topic {
+                overflow-x: auto;
+            }
+
+            /* Reduce padding on mobile for better space utilization */
+            .subtopic {
+                padding: 15px;
+            }
+
+            .topic {
+                padding-right: 10px;
             }
         }
 
@@ -1598,6 +1657,7 @@ Shared RAM
                                         <div class="code-block">
                                             <pre>mongodb+srv://botuser:&lt;password&gt;@cluster0.xxxxx.mongodb.net/?retryWrites=true&amp;w=majority</pre>
                                         </div>
+                                        <p style="font-size: 0.85em; opacity: 0.7; margin: 5px 0;">💡 במובייל: גלול ימינה לראות את כל המחרוזת</p>
                                         <ul>
                                             <li>החלף <code>&lt;password&gt;</code> בסיסמה האמיתית של המשתמש</li>
                                             <li>הוסף שם מסד נתונים לפני הסימן <code>?</code></li>
@@ -1612,6 +1672,7 @@ Shared RAM
                             <div class="code-block">
                                 <pre>mongodb+srv://botuser:myPassword123@cluster0.abc12.mongodb.net/telegram_bot?retryWrites=true&w=majority</pre>
                             </div>
+                            <p style="font-size: 0.9em; opacity: 0.8;">💡 במובייל: גלול ימינה לראות את כל המחרוזת</p>
                             <p><strong>שמור את זה במקום בטוח!</strong> תצטרך אותו בקובץ .env</p>
                         </div>
                     </div>
