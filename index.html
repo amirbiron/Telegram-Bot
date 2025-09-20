@@ -112,18 +112,6 @@
             transform: translateX(-5px);
         }
 
-        .nav-section a.active {
-            background: #4a5568 !important;
-            color: #81e6d9 !important;
-            font-weight: bold !important;
-            border-left: 4px solid #81e6d9 !important;
-            border-radius: 6px 0 0 6px !important;
-        }
-
-        .nav-section a.active:hover {
-            transform: none;
-        }
-
         /* Section metadata badges */
         .section-meta {
             display: flex;
@@ -554,8 +542,6 @@
 
         .section-content {
             padding: 40px;
-            overflow-x: hidden;
-            word-wrap: break-word;
         }
 
         /* Content styling */
@@ -637,8 +623,6 @@
             word-wrap: break-word;
             word-break: break-word;
             overflow-wrap: break-word;
-            max-width: 100%;
-            overflow-x: auto;
         }
 
         .code-block h5 {
@@ -656,8 +640,6 @@
             padding: 20px;
             margin: 20px 0;
             color: #1a365d;
-            overflow-x: hidden;
-            word-wrap: break-word;
         }
 
         .warning-box {
@@ -667,8 +649,6 @@
             padding: 20px;
             margin: 20px 0;
             color: #742a2a;
-            overflow-x: hidden;
-            word-wrap: break-word;
         }
 
         .success-box {
@@ -678,8 +658,6 @@
             padding: 20px;
             margin: 20px 0;
             color: #1c4532;
-            overflow-x: hidden;
-            word-wrap: break-word;
         }
 
         .tip-box {
@@ -689,8 +667,6 @@
             padding: 20px;
             margin: 20px 0;
             color: #744210;
-            overflow-x: hidden;
-            word-wrap: break-word;
         }
 
         /* Lists */
@@ -844,23 +820,6 @@
                 overflow-x: auto;
             }
 
-            /* Better link handling on mobile */
-            a[href^="http"], a[href^="mailto"] {
-                font-size: 0.9em;
-                line-height: 1.4;
-                word-break: break-all;
-                overflow-wrap: anywhere;
-            }
-
-            /* Prevent horizontal scrolling issues */
-            .section-content {
-                overflow-x: hidden;
-            }
-
-            .success-box, .info-box, .warning-box, .error-box {
-                overflow-x: hidden;
-            }
-
             /* Reduce padding on mobile for better space utilization */
             .subtopic {
                 padding: 15px;
@@ -893,34 +852,10 @@
         a {
             color: #667eea;
             text-decoration: none;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            hyphens: auto;
         }
 
         a:hover {
             text-decoration: underline;
-        }
-
-        /* Long URL handling */
-        a[href^="http"] {
-            word-break: break-all;
-            display: inline-block;
-            max-width: 100%;
-            overflow-wrap: anywhere;
-        }
-
-        /* Special handling for email links */
-        a[href^="mailto"] {
-            word-break: break-all;
-        }
-
-        /* Ensure links in paragraphs don't overflow */
-        p a, li a, td a {
-            max-width: 100%;
-            display: inline;
-            overflow-wrap: break-word;
-            word-wrap: break-word;
         }
 
         .highlight {
@@ -5358,17 +5293,13 @@ MONGO_URI=your_mongo_uri_here</pre>
             navLinks.forEach(link => {
                 link.classList.remove('active');
                 if (link.getAttribute('data-section') === current) {
-                    link.classList.add('active');
                     link.style.background = '#4a5568';
                     link.style.color = '#81e6d9';
                     link.style.fontWeight = 'bold';
-                    link.style.borderLeft = '4px solid #81e6d9';
                 } else {
-                    link.classList.remove('active');
                     link.style.background = '';
                     link.style.color = '#e2e8f0';
                     link.style.fontWeight = 'normal';
-                    link.style.borderLeft = '';
                 }
             });
         });
