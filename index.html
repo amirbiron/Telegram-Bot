@@ -852,10 +852,23 @@
         a {
             color: #667eea;
             text-decoration: none;
+            /* Prevent long links from overflowing containers */
+            word-break: break-word;
+            overflow-wrap: anywhere;
         }
 
         a:hover {
             text-decoration: underline;
+        }
+
+        /* Do not underline sidebar navigation links on hover/click */
+        .sidebar .nav-section a,
+        .sidebar .nav-section a:hover,
+        .sidebar .nav-section a:focus,
+        .sidebar .nav-section a:active {
+            text-decoration: none;
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
         }
 
         .highlight {
